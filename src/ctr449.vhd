@@ -131,16 +131,17 @@ end component;
 
 signal clk,clk_msec,iMCLK,iSCK,ilrck,iMUTE,ov96k : std_logic;
 signal chat_clk,endivclk,attdwn,attup : std_logic;
+signal idsdf,isc0,isc1,isc2,idem0,dsd,idsdsel0 : std_logic;
 signal ak4490,smute : std_logic;
 signal attcount : std_logic_vector(7 downto 0);
 
 begin
 
-	R1 : regctr port map (RESET => cpok,CLK => CLK_10M,CLK_MSEC => clk_msec,XDSD => xdsd,
+	R1 : regctr port map (RESET => cpok,CLK => CLK_10M,CLK_MSEC => clk_msec,XDSD => dsd,
 								DIF0 => dif0,DIF1 => dif1,DIF2 => dif2,SMUTE => smute,
-								DEM0 => dem0,GC => gc,SD => sd,SLOW => slow,
-								MONO => mono,DSDSEL0 => dsdsel0,DSDSEL1 => dsdsel1,DSDF => dsdf,
-								SSLOW => sslow,DSDD => dsdd,SC0 => sc0,SC1 => sc1,SC2 => sc2,AK4490 => ak4490,AK4499 => ak4499,
+								DEM0 => idem0,GC => gc,SD => sd,SLOW => slow,
+								MONO => mono,DSDSEL0 => idsdsel0,DSDSEL1 => dsdsel1,DSDF => idsdf,
+								SSLOW => sslow,DSDD => dsdd,SC0 => isc0,SC1 => isc1,SC2 => isc2,AK4490 => ak4490,AK4499 => ak4499,
 								ATTCOUNT => attcount,CSN => csn,CCLK => cclk,CDTI => cdti); 
 
 	C1 : clkgen port map (RESET => cpok,CLK => CLK_10M,CLK_24M => clk_24m,CLK_22M => clk_22m,
@@ -155,7 +156,15 @@ begin
 
 	D2 : dispctr port map (RESET => cpok,CLK => clk_10M,CHAT_CLK => chat_clk,ENDIVCLK => endivclk,ATTDWN => attdwn,
 								ATTUP => attup,DISPSW => DISPSW,DIN => attcount,COMSEL => comsel,LED => LED);
-	ak4490 <= not RACSEL;	
+	
+	ak4490 <= not RACSEL;
+	idsdf <= not DSDF;
+	isc0 <= not SC0;
+	isc1 <= not SC1;
+	isc2 <= not SC2;
+	idem0 <= not DEM0;
+	dsd <= not XDSD;
+	idsdsel0 <= DSDSEL0;
 	
 	ilrck <= LRCK0 when XDSD = '1' else LRCK_DSDR;
 	LRCK <= ilrck;

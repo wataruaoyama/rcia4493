@@ -53,12 +53,13 @@ signal next_state: states;
 
 constant ak4490_stereo : std_logic_vector(11 downto 0) := "001001100000";
 constant ak4490_mono : std_logic_vector(11 downto 0) := "010011000000";
---constant ak4497_stereo : std_logic_vector(11 downto 0) := "010101100000";	-- 1376
---constant ak4497_mono : std_logic_vector(11 downto 0) := "101011000000";		-- 2752
-constant ak4497_stereo : std_logic_vector(11 downto 0) := "001111100000";	-- 992
-constant ak4497_mono : std_logic_vector(11 downto 0) := "011111000000";		-- 1984
+constant ak4497_stereo : std_logic_vector(11 downto 0) := "010101100000";	-- 1376
+constant ak4497_mono : std_logic_vector(11 downto 0) := "101011000000";		-- 2752
+--constant ak4497_stereo : std_logic_vector(11 downto 0) := "001111100000";	-- 992
+--constant ak4497_mono : std_logic_vector(11 downto 0) := "011111000000";		-- 1984
 constant regaddr_ak4490 : std_logic_vector(4 downto 0) := "01001";
-constant regaddr_ak4497 : std_logic_vector(4 downto 0) := "01111";
+--constant regaddr_ak4497 : std_logic_vector(4 downto 0) := "01111";
+constant regaddr_ak4497 : std_logic_vector(4 downto 0) := "10101";
 constant regaddr_zero : std_logic_vector(4 downto 0) := "00000";
 
 -- Register address
@@ -284,13 +285,13 @@ process (MONO,ak4499,chipaddr) begin
 				invr1 <= '0';
 				mono2 <= '1';
 				sellr2 <= '0';
-				invl2 <= '0';
-				invr2 <= '0';
+				invl2 <= '1';
+				invr2 <= '1';
 			else
 				mono1 <= '1';
 				sellr1 <= '1';
-				invl1 <= '0';
-				invr1 <= '0';
+				invl1 <= '1';
+				invr1 <= '1';
 				mono2 <= '1';
 				sellr2 <= '1';
 				invl2 <= '0';
@@ -328,17 +329,17 @@ process(regaddrcnt,DIF2,DIF1,DIF0,rstdp,SD,GC,DEM0,SMUTE,
 		regd(4) <= '0';	--DFS1
 		regd(3) <= '1';	--DFS0
 		regd(2) <= '0';	--DEM1 ;Default off '0'
-		regd(1) <= not DEM0;	--DEM0 ;Default off '1'
+		regd(1) <= DEM0;	--DEM0 ;Default off '1'
 		regd(0) <= SMUTE;	--SMUTE
 	elsif(regaddrcnt = Control3) then
-		regd(7) <= not XDSD;	--DP
+		regd(7) <= XDSD;	--DP
 		regd(6) <= '0';
 		regd(5) <= '0';		--DCKS
 		regd(4) <= '0';		--DCKB
 		regd(3) <= mono1;		--MONO1
 		regd(2) <= '0';		--DZFB
 		regd(1) <= sellr1;		--SELLR1
-		regd(0) <= not SLOW;		--SLOW
+		regd(0) <= SLOW;		--SLOW
 	elsif(regaddrcnt = L1ch_ATT) then
 		regd <= ATTCOUNT;	--ATT(7:0)
 	elsif(regaddrcnt = R1ch_ATT) then
@@ -351,7 +352,7 @@ process(regaddrcnt,DIF2,DIF1,DIF0,rstdp,SD,GC,DEM0,SMUTE,
 		regd(3) <= sellr2;	--SELLR2
 		regd(2) <= '0';
 		regd(1) <= '1';	--DFS2
-		regd(0) <= not SSLOW;	--SSLOW
+		regd(0) <= SSLOW;	--SSLOW
 	elsif(regaddrcnt = DSD1) then
 		regd(7) <= '1';		--DDM  Change "0" to "1" at Revision 1.1
 		regd(6) <= '1';		--DML
@@ -387,7 +388,7 @@ process(regaddrcnt,DIF2,DIF1,DIF0,rstdp,SD,GC,DEM0,SMUTE,
 		regd(3) <= '0';
 		regd(2) <= ak4499;		--DSDPATH at ak4497/99
 		regd(1) <= DSDF;		-- _/DSDF
-		regd(0) <= not DSDSEL1;	--DSDSEL1
+		regd(0) <= DSDSEL1;	--DSDSEL1
 -- From resister address "0AH" to "0FH" is about for AK4497/AK4493
 	elsif(regaddrcnt = Control6) then
 		regd(7) <= '0';	--TDM1
@@ -476,7 +477,7 @@ process(regaddrcnt,DIF2,DIF1,DIF0,rstdp,SD,GC,DEM0,SMUTE,
 		regd(1) <= '0';
 		regd(0) <= '0';
 	elsif(regaddrcnt = DFS_read) then
-		regd(7) <= '0';	--ADPE
+		regd(7) <= '1';	--ADPE
 		regd(6) <= '0';	--ADPT1
 		regd(5) <= '0';	--ADPT0
 		regd(4) <= '0';
